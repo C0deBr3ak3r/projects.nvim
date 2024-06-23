@@ -4,51 +4,54 @@ local utils = require('projects-nvim.utils')
 local M = {}
 
 ---@alias path string Absolute path to project root directory
----@type table<path, ProjectSpec>
+---@type table<path, ProjectConfig>
 M.db = {}
 
 ---@class LoadedProjects
----@field project ProjectSpec
+---@field config ProjectConfig
+---@field info ProjectInfo
 ---@field buffers integer[] Buffer numbers associated with project
 M.current_project = {}
 
----@param info ProjectInfo
-local function normalize_db(info)
-	local result = {
-		name = info.name or 'COPILOT+ YOUR MAMMA',
-		description = info.description or 'DEVELOPERS DEVELOPERS DEVELOPERS',
-		author = info.author or 'The Illuminati',
-		repo = info.repo or 'MegaHard',
-		license = info.name or 'proprietary bullshit',
-	}
-	return result
+---Get info about projects inside the database
+---@return table<path, ProjectInfo>
+function M.get_projects_info()
+	local info = {}
+
+	for path, _ in pairs(M.db) do
+		local file, erropen = io.open(path .. '/.nvim/project.json', 'r')
+
+		if erropen or not file then
+			utils.log('Error while opening project.json: ' .. erropen)
+			goto continue
+		end
+
+		info[path] = vim.tbl_extend(
+			'force',
+			vim.g.projects_nvim_config.template,
+			vim.json.decode(file:read('*a') or '{}', {
+				luanil = {
+					object = true,
+					array = true,
+				},
+			})
+		)
+
+		file:close()
+
+		::continue::
+	end
+
+	return info
 end
 
 --- Add projects to database
 ---@param projects ProjectConfig[]
 function M.add_projects(projects)
 	for _, project in ipairs(projects) do
-		local path = vim.fs.normalize(vim.fn.fnamemodify(project.path, ':p'))
+		local path = vim.fn.fnamemodify(project.path, ':p')
 		if not M.db[path] then
-			utils.log('Adding project at path `' .. path .. '` to database')
-			local file, erropen = io.open(path .. '/.nvim/project.json', 'r')
-
-			if erropen or not file then
-				utils.log('Error while opening project.json: ' .. erropen)
-				return
-			end
-
-			M.db[path] = {
-				config = project,
-				info = normalize_db(vim.json.decode(file:read('*a') or '{}', {
-					luanil = {
-						object = true,
-						array = true,
-					},
-				})),
-			}
-
-			file:close()
+			M.db[path] = project
 		end
 	end
 end
