@@ -1,0 +1,7 @@
+{
+	"name": "Projects.nvim",
+	"author": "C0deBr3ak3r",
+	"repo": "https://github.com/C0deBr3ak3r/projects.nvim",
+	"description": "A project manager for NeoVim",
+	"license": "The UNLICENSE"
+}
