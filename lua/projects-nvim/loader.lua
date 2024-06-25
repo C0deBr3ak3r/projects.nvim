@@ -3,14 +3,13 @@ local utils = require('projects-nvim.utils')
 
 local M = {}
 
----@alias path string Absolute path to project root directory
----@type table<path, ProjectConfig>
+---@type table<string, ProjectConfig>
 M.db = {}
 
----@class LoadedProjects
----@field config ProjectConfig
----@field info ProjectInfo
----@field buffers integer[] Buffer numbers associated with project
+---@class ProjectLoaded
+---@field config	ProjectConfig
+---@field info		ProjectInfo
+---@field buffers	integer[] Buffer numbers associated with project
 M.current_project = {}
 
 ---Get info about projects inside the database
@@ -56,9 +55,8 @@ function M.add_projects(projects)
 	end
 end
 
----@param project path
-function M.load_project(project)
-	if not project then
+---@param project_path string
+function M.load_project(project_path)
 		return
 	end
 
@@ -74,9 +72,8 @@ function M.load_project(project)
 	vim.api.nvim_exec_autocmds('User', { pattern = 'ProjectLoadPost', data = project })
 end
 
----@param project path
-function M.unload_project(project)
-	if not project or not M.current_project[project] then
+---@param project_path string
+function M.unload_project(project_path)
 		return
 	end
 

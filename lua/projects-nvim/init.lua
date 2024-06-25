@@ -4,9 +4,8 @@ local loader = require('projects-nvim.loader')
 
 local M = {}
 
----@param config ProjectOpts
-function M.setup(config)
-	return
+---@param opts ProjectOpts
+function M.setup(opts)
 end
 
 return M

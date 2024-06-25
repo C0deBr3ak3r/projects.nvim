@@ -12,9 +12,9 @@ local levels = {
 ---@type file*
 local log_file = nil
 
----@param msg string
----@param log_level? integer One of vim.log.levels
----@param opts? table
+---@param msg			string
+---@param log_level?	integer One of vim.log.levels
+---@param opts?			table
 function M.notify(msg, log_level, opts)
 	vim.schedule(function()
 		vim.notify(msg, log_level, opts)
@@ -37,8 +37,8 @@ function M.set_log_file(path)
 	log_file = file
 end
 
----@param msg string
----@param level integer? One of the values of vim.log.levels
+---@param msg	string
+---@param level	integer? One of the values of vim.log.levels
 function M.log(msg, level)
 	level = level or vim.log.levels.DEBUG
 	if level < (vim.g.projects_nvim_config.log_level or vim.log.levels.WARN) then
