@@ -8,11 +8,11 @@ local actions = require('telescope._extensions.projects.actions')
 
 local function generate_entries()
 	-- Be sure to add entries to the db in case of lazy loading
-	require('projects-nvim.loader').add_projects(vim.g.projects_nvim_config.projects or {})
+	require('projects.loader').add_projects(vim.g.projects_nvim_config.projects or {})
 
 	local entries = {}
 
-	for path, spec in pairs(require('projects-nvim.loader').get_projects_info()) do
+	for path, spec in pairs(require('projects.loader').get_projects_info()) do
 		table.insert(entries, {
 			path = vim.fs.normalize(path, {}),
 			info = spec,

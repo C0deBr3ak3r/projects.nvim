@@ -1,6 +1,6 @@
-require('projects-nvim.types')
-local utils = require('projects-nvim.utils')
-local actions = require('projects-nvim.actions')
+require('projects.types')
+local utils = require('projects.utils')
+local actions = require('projects.actions')
 
 local M = {}
 

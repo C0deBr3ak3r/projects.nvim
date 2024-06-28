@@ -1,5 +1,5 @@
 local M = {}
-local utils = require('projects-nvim.utils')
+local utils = require('projects.utils')
 ---Default project loader
 ---@param config ProjectsConfig
 ---@param info ProjectsInfo

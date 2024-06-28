@@ -1,8 +1,8 @@
 local actions = require('telescope.actions')
 local actions_state = require('telescope.actions.state')
 
-local projects_loader = require('projects-nvim.loader')
-local projects_utils = require('projects-nvim.utils')
+local projects_loader = require('projects.loader')
+local projects_utils = require('projects.utils')
 
 local M = {}
 
