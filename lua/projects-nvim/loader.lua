@@ -32,7 +32,7 @@ function M.get_projects_info(project_path)
 	local projects = db
 
 	if project_path then
-		projects = db[vim.fs.normalize(project_path)] or {}
+		projects = { [project_path] = db[vim.fs.normalize(project_path)] or {} }
 	end
 
 	local info = {}
@@ -96,7 +96,7 @@ function M.load_project(project_path)
 
 	if type(db[project].on_load) == 'function' then
 		local config = db[project]
-		local info = M.get_projects_info(project)[1]
+		local info = M.get_projects_info(project)[project]
 		local ok, data = db[project].on_load(config, info)
 
 		if not ok then
