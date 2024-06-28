@@ -59,9 +59,12 @@ end
 ---@param projects ProjectsConfig[]
 function M.add_projects(projects)
 	for _, project in ipairs(projects) do
-		local path = vim.fn.fnamemodify(project.path, ':p')
-		if not M.db[path] then
-			M.db[path] = project
+		local path = vim.fs.normalize(vim.fn.fnamemodify(project.path, ':p'))
+		if not db[path] then
+			db[path] = vim.tbl_extend('force', {
+				on_load = actions.default_loader,
+				on_unload = actions.default_unloader,
+			}, project, { path = path })
 		end
 	end
 end
