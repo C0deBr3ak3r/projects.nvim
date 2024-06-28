@@ -28,7 +28,7 @@ function M.default_loader(config, info)
 		utils.log('Fail to save session, cannot load project', vim.log.levels.ERROR)
 		return false
 	end
-	print(vim.inspect(config))
+
 	vim.cmd.cd(vim.fs.normalize(config.path))
 
 	if config.files then
