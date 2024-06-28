@@ -2,38 +2,38 @@ local telescope = require('telescope')
 local pickers = require('telescope.pickers')
 local finders = require('telescope.finders')
 local previewers = require('telescope.previewers')
-local utils = require('telescope.previewers.utils')
-local state = require('telescope.state')
-local telescope_actions = require('telescope.actions')
-local telescope_actions_state = require('telescope.actions.state')
 local conf = require('telescope.config').values
 
 local actions = require('telescope._extensions.projects.actions')
 
 local function generate_entries()
+	-- Be sure to add entries to the db in case of lazy loading
 	require('projects-nvim.loader').add_projects(vim.g.projects_nvim_config.projects or {})
 
 	local entries = {}
 
-	for path, spec in pairs(require('projects-nvim.loader').db) do
+	for path, spec in pairs(require('projects-nvim.loader').get_projects_info()) do
 		table.insert(entries, {
-			path = path,
-			info = spec.info,
+			path = vim.fs.normalize(path, {}),
+			info = spec,
 		})
 	end
 
 	return entries
 end
 
-local default_mappings = {
-	i = {
-		['<CR>'] = actions.open_project,
-	},
-	v = {
-		['<CR>'] = actions.open_project,
-		['gx'] = actions.open_project_repo,
-		['ge'] = actions.edit_project,
-		['d'] = actions.delete_project,
+local config = {}
+local defaults = {
+	mappings = {
+		i = {
+			['<CR>'] = actions.open_project,
+		},
+		n = {
+			['<CR>'] = actions.open_project,
+			['gx'] = actions.open_project_repo,
+			['ge'] = actions.edit_project,
+			['d'] = actions.delete_project,
+		},
 	},
 }
 
@@ -59,6 +59,7 @@ vim.api.nvim_set_hl(0, 'ProjectLicense', {
 })
 
 local function projects(opts)
+	opts = vim.tbl_deep_extend('force', config, opts or {})
 	pickers
 		.new(opts, {
 			prompt_title = 'Find Projects',
@@ -69,16 +70,13 @@ local function projects(opts)
 					return {
 						value = entry,
 						display = entry.info.name .. ': ' .. vim.fn.fnamemodify(entry.path, ':~'),
-						ordinal = entry.info.name
-							.. ' '
-							.. entry.path
-							.. ' '
-							.. entry.info.description,
+						ordinal = entry.info.name .. ' ' .. entry.path .. ' ' .. entry.info.description,
 					}
 				end,
 			}),
 			previewer = previewers.new_buffer_previewer({
 				title = 'Project Information',
+				---@param entry ProjectsTelescopeEntry
 				define_preview = function(self, entry)
 					local preview = {
 						entry.value.info.name,
@@ -93,36 +91,20 @@ local function projects(opts)
 					vim.api.nvim_buf_set_lines(self.state.bufnr, -1, -1, true, description)
 
 					local ns = vim.api.nvim_create_namespace('')
-					vim.api.nvim_buf_set_extmark(self.state.bufnr, ns, 0, 0, {
-						end_col = #preview[1],
-						hl_group = 'ProjectTitle',
-					})
-					vim.api.nvim_buf_set_extmark(self.state.bufnr, ns, 2, 8, {
-						end_col = #preview[3],
-						hl_group = 'ProjectAuthor',
-					})
-					vim.api.nvim_buf_set_extmark(self.state.bufnr, ns, 3, 18, {
-						end_col = #preview[4],
-						hl_group = 'ProjectLicense',
-					})
-					vim.api.nvim_buf_set_extmark(self.state.bufnr, ns, 4, 4, {
-						end_col = #preview[5],
-						hl_group = 'ProjectRepo',
-					})
+					vim.api.nvim_buf_add_highlight(self.state.bufnr, ns, 'ProjectTitle', 0, 0, -1)
+					vim.api.nvim_buf_add_highlight(self.state.bufnr, ns, 'ProjectAuthor', 2, 9, -1)
+					vim.api.nvim_buf_add_highlight(self.state.bufnr, ns, 'ProjectLicense', 3, 19, -1)
+					vim.api.nvim_buf_add_highlight(self.state.bufnr, ns, 'ProjectRepo', 4, 4, -1)
 					vim.api.nvim_buf_set_extmark(self.state.bufnr, ns, 6, 0, {
 						end_line = 7 + #description,
 						hl_group = 'ProjectDescription',
 					})
 				end,
 			}),
-			attach_mappings = function(prompt_bufnr, map)
-				opts.mappings = opts.mappings or {}
+			attach_mappings = function(_, map)
 				for _, mode in pairs({ 'i', 'n' }) do
-					for key, action in pairs(default_mappings[mode] or {}) do
-						map(mode, key, action(prompt_bufnr))
-					end
 					for key, action in pairs(opts.mappings[mode] or {}) do
-						map(mode, key, action(prompt_bufnr))
+						map(mode, key, action)
 					end
 				end
 				return true
@@ -133,6 +115,9 @@ local function projects(opts)
 end
 
 return telescope.register_extension({
+	setup = function(ext_conf, _)
+		config = vim.tbl_deep_extend('force', defaults, ext_conf)
+	end,
 	exports = {
 		projects = projects,
 	},
