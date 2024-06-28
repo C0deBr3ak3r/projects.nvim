@@ -1,20 +1,19 @@
----@class ProjectOpts
----@field projects		ProjectConfig[]
----@field log_file?		string		Absolute path to log file
----@field log_level?	integer		Minimum level to write into log, one of vim.log.levels
----@field detect_git	boolean?	Detect when is inside a git repo and prompt to add the project
----@field template?		ProjectInfo	Template for a new project
+---@class ProjectsOpts
+---@field projects		ProjectsConfig[]
+---@field log_file?		string		 Absolute path to log file
+---@field log_level?	integer		 Minimum level to write into log, one of vim.log.levels
+---@field template?		ProjectsInfo Template for a new project
 
----@class ProjectConfig
----@field path			string												Path to project root directory
----@field files			string[]											Files to load when project is loaded
----@field on_load?		fun(config: ProjectConfig,info:ProjectInfo):boolean	Function to call when loading a project
----@field on_unload?	fun(project: ProjectLoaded):boolean					Function to call when unloading a project
----@field always_trust? boolean												Insecure feature
----@field enable_tasks? boolean												Need overseer.nvim
----@field use_sessions? boolean												Need ressesion.nvim
+---@class ProjectsConfig
+---@field path			string						 Path to project root directory
+---@field files?		string[]					 Files to load when project is loaded
+---@field on_load?		ProjectsLoadFunc | boolean	 Function to call when loading a project, set to false to disable it
+---@field on_unload?	ProjectsUnloadFunc | boolean Function to call when unloading a project, set to false to disable it
 
----@class ProjectInfo
+---@alias ProjectsLoadFunc fun(config: ProjectsConfig, info:ProjectsInfo):boolean, any
+---@alias ProjectsUnloadFunc fun(project:ProjectsLoaded):boolean
+
+---@class ProjectsInfo
 ---@field name			string
 ---@field description	string
 ---@field author		string

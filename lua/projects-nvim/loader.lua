@@ -3,18 +3,17 @@ local utils = require('projects-nvim.utils')
 
 local M = {}
 
----@type table<string, ProjectConfig>
+---@type table<string, ProjectsConfig>
 M.db = {}
 
----@class ProjectLoaded
----@field config	ProjectConfig
----@field info		ProjectInfo
----@field buffers	integer[] Buffer numbers associated with project
-M.current_project = {}
+---@class ProjectsLoaded
+---@field config	ProjectsConfig
+---@field info		ProjectsInfo
+---@field data?		any			Can be use to store anything you want to pass to on_unload
+M.current_project = nil
 
 ---Get info about projects inside the database
----@return table<path, ProjectInfo>
-function M.get_projects_info()
+---@return table<string, ProjectsInfo>
 	local info = {}
 
 	for path, _ in pairs(M.db) do
@@ -45,7 +44,7 @@ function M.get_projects_info()
 end
 
 --- Add projects to database
----@param projects ProjectConfig[]
+---@param projects ProjectsConfig[]
 function M.add_projects(projects)
 	for _, project in ipairs(projects) do
 		local path = vim.fn.fnamemodify(project.path, ':p')
