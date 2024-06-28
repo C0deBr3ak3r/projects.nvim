@@ -1,5 +1,6 @@
 require('projects-nvim.types')
 local utils = require('projects-nvim.utils')
+local actions = require('projects-nvim.actions')
 
 local M = {}
 
@@ -79,12 +80,34 @@ end
 
 ---@param project_path string
 function M.load_project(project_path)
-		return
+	local project = vim.fs.normalize(project_path)
+
+	if current_project then
+		if vim.fs.normalize(current_project.config.path) == project then
+			utils.log('Project at path `' .. project .. '` is already loaded', vim.log.levels.INFO)
+			return
+		end
+		utils.log('current_project is not empty, unloading it', vim.log.levels.INFO)
+
+		M.unload_project(project)
 	end
 
-	if M.current_project == vim.empty_dict and M.current_project.project.config.path == project then
-		utils.log('Project at path `' .. project .. '` is already loaded', vim.log.levels.INFO)
-		utils.notify('Project is already loaded', vim.log.levels.INFO)
+	utils.log('Loading project at path: ' .. project, vim.log.levels.DEBUG)
+
+	if type(db[project].on_load) == 'function' then
+		local config = db[project]
+		local info = M.get_projects_info(project)[1]
+		local ok, data = db[project].on_load(config, info)
+
+		if not ok then
+			utils.log('Error on `on_load` function', vim.log.levels.ERROR)
+		end
+
+		current_project = {
+			config = config,
+			info = info,
+			data = data,
+		}
 		return
 	end
 
@@ -95,14 +118,27 @@ end
 
 ---@param project_path string
 function M.unload_project(project_path)
+	if not current_project then
 		return
 	end
 
-	if type(M.loaded[project].project.config.on_unload) == 'function' then
-		utils.log('Running `on_unload` function for project at path: ' .. project)
-		M.loaded[project].project.config.on_unload(M.loaded.buffers)
+	local project = vim.fs.normalize(project_path)
+
+	if current_project.config.path ~= project then
+		utils.log('Project at path ' .. project .. ' is not loaded', vim.log.levels.ERROR)
+		return
 	end
-	M.loaded[project] = nil
+
+	utils.log('Unloading project at path: ' .. project, vim.log.levels.DEBUG)
+
+	if
+		type(current_project.config.on_unload) == 'function'
+		and not current_project.config.on_unload(current_project)
+	then
+		utils.log('Error on `on_load` function', vim.log.levels.ERROR)
+		return
+	end
+	current_project = nil
 
 	utils.log('TODO: unload project at path: ' .. project, vim.log.levels.WARN)
 
