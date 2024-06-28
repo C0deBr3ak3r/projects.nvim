@@ -25,10 +25,18 @@ function M.get_db()
 end
 
 ---Get info about projects inside the database
+---@param project_path? string
 ---@return table<string, ProjectsInfo>
+function M.get_projects_info(project_path)
+	local projects = db
+
+	if project_path then
+		projects = db[vim.fs.normalize(project_path)] or {}
+	end
+
 	local info = {}
 
-	for path, _ in pairs(M.db) do
+	for path, _ in pairs(projects) do
 		local file, erropen = io.open(path .. '/.nvim/project.json', 'r')
 
 		if erropen or not file then
