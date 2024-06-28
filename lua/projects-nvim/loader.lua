@@ -4,13 +4,25 @@ local utils = require('projects-nvim.utils')
 local M = {}
 
 ---@type table<string, ProjectsConfig>
-M.db = {}
+local db = {}
 
 ---@class ProjectsLoaded
 ---@field config	ProjectsConfig
 ---@field info		ProjectsInfo
 ---@field data?		any			Can be use to store anything you want to pass to on_unload
-M.current_project = nil
+
+---@type ProjectsLoaded | nil
+local current_project = nil
+
+---@return ProjectsLoaded
+function M.get_current_project()
+	return vim.deepcopy(current_project or {}, true)
+end
+
+---@return table<string, ProjectsConfig>
+function M.get_db()
+	return vim.deepcopy(db, true)
+end
 
 ---Get info about projects inside the database
 ---@return table<string, ProjectsInfo>
