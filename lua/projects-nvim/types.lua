@@ -20,3 +20,9 @@
 ---@field author		string
 ---@field repo			string
 ---@field license		string
+
+---@class ProjectsTelescopeEntry
+---@field display		string
+---@field index			integer
+---@field ordinal		string
+---@field value			{info: ProjectsInfo, path: string}
