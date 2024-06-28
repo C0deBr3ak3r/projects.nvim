@@ -66,7 +66,6 @@ function M.load_project(project_path)
 	end
 
 	utils.log('TODO: load project at path: ' .. project, vim.log.levels.WARN)
-	utils.notify('TODO: load project at path: ' .. project, vim.log.levels.WARN)
 
 	vim.api.nvim_exec_autocmds('User', { pattern = 'ProjectLoadPost', data = project })
 end
@@ -83,9 +82,6 @@ function M.unload_project(project_path)
 	M.loaded[project] = nil
 
 	utils.log('TODO: unload project at path: ' .. project, vim.log.levels.WARN)
-	utils.notify('TODO: unload project at path: ' .. project, vim.log.levels.WARN)
-
-	utils.log('Unloading project at path: ' .. project)
 
 	vim.api.nvim_exec_autocmds('User', { pattern = 'ProjectUnloadPost', data = project })
 end

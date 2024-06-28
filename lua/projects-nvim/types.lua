@@ -2,6 +2,7 @@
 ---@field projects		ProjectsConfig[]
 ---@field log_file?		string		 Absolute path to log file
 ---@field log_level?	integer		 Minimum level to write into log, one of vim.log.levels
+---@field notify_level?	integer		 Minimum level to call vim.notify
 ---@field template?		ProjectsInfo Template for a new project
 
 ---@class ProjectsConfig
