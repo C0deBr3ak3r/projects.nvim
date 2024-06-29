@@ -31,9 +31,9 @@ local defaults = {
 		n = {
 			['<CR>'] = actions.open_project,
 			['gx'] = actions.open_project_repo,
-			['ge'] = actions.edit_project,
-			['d'] = actions.delete_project,
-			['mk'] = actions.create_project,
+			['<leader>pe'] = actions.edit_project,
+			['<leader>pd'] = actions.delete_project,
+			['<leader>pm'] = actions.create_project,
 		},
 	},
 }
