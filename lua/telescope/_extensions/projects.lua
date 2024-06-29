@@ -33,6 +33,7 @@ local defaults = {
 			['gx'] = actions.open_project_repo,
 			['ge'] = actions.edit_project,
 			['d'] = actions.delete_project,
+			['mk'] = actions.create_project,
 		},
 	},
 }
