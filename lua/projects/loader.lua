@@ -82,6 +82,10 @@ end
 function M.load_project(project_path)
 	local project = vim.fs.normalize(project_path)
 
+	if not db[project] then
+		return
+	end
+
 	if current_project then
 		if vim.fs.normalize(current_project.config.path) == project then
 			utils.log('Project at path `' .. project .. '` is already loaded', vim.log.levels.INFO)
