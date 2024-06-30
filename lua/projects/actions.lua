@@ -1,6 +1,7 @@
 local M = {}
 local utils = require('projects.utils')
----Default project loader
+
+---Default project loader, you create aucmds for ProjectsDefaultAugroup
 ---@param config ProjectsConfig
 ---@param info ProjectsInfo
 ---@return boolean, any
@@ -33,7 +34,10 @@ function M.default_loader(config, info)
 
 	if config.files then
 		for _, file in pairs(config.files) do
-			vim.secure.read(vim.fs.joinpath(config.path, '.nvim', file))
+			local path = vim.fs.joinpath(config.path, '.nvim', file)
+			if vim.secure.read(path) then
+				vim.cmd.source(path)
+			end
 		end
 	end
 
@@ -59,7 +63,7 @@ function M.default_unloader(project)
 		return false
 	end
 
-	vim.cmd('augroup DefaultProjectsGroup | autocmd! | augroup END')
+	vim.api.nvim_del_augroup_by_name('ProjectsDefaultAugroup')
 
 	vim.cmd.cd(project.data.cur_dir)
 	vim.cmd.so(project.data.session_file_path)
