@@ -24,7 +24,7 @@ function M.open_project(prompt_bufnr)
 	projects.open(entry.value.path)
 end
 
-function M.open_project_repo()
+function M.open_project_repo(_)
 	---@type ProjectsTelescopeEntry | nil
 	local entry = actions_state.get_selected_entry()
 
@@ -32,7 +32,6 @@ function M.open_project_repo()
 		return
 	end
 
-	actions.close(prompt_bufnr)
 	vim.ui.open(entry.value.info.repo)
 end
 
@@ -45,6 +44,7 @@ function M.edit_project(prompt_bufnr)
 		return
 	end
 
+	actions.close(prompt_bufnr)
 	projects.edit(entry.value.path)
 end
 
@@ -63,17 +63,8 @@ end
 
 ---@param prompt_bufnr integer
 function M.create_project(prompt_bufnr)
-	vim.ui.input({
-		prompt = 'Project path: ',
-		completion = 'dir',
-	}, function(input)
-		if not input then
-			return
-		end
-
-		actions.close(prompt_bufnr)
-		projects.create()
-	end)
+	actions.close(prompt_bufnr)
+	projects.create()
 end
 
 return M

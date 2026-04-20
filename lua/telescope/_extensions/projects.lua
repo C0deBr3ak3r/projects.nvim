@@ -11,9 +11,9 @@ local function generate_entries()
 
 	local entries = {}
 
-	for path, spec in pairs(require('projects').get_projects_info()) do
+	for _, spec in pairs(require('projects').get_projects_info()) do
 		table.insert(entries, {
-			path = vim.fs.normalize(path, {}),
+			path = spec.path,
 			info = spec,
 		})
 	end
