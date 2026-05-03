@@ -329,7 +329,7 @@ end
 
 function M.create()
 	if not projects then
-		local projects_file, err = io.open(opts.projects_file, 'w+')
+		local projects_file, err = io.open(opts.projects_file, 'r+')
 		if not projects_file then
 			log(
 				string.format('CREATE: Could not open file "%s" %s', opts.projects_file, err),
